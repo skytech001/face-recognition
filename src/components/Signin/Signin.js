@@ -22,7 +22,7 @@ class Signin extends React.Component {
     if (!email || !password) {
       return console.log("wrong credentials");
     }
-    fetch("http://localhost:3001/signin", {
+    fetch("https://morning-badlands-83577.herokuapp.com/signin", {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

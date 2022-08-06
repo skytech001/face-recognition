@@ -27,7 +27,7 @@ class Register extends React.Component {
     if (!email || !password || !name) {
       return console.log("wrong credentials");
     }
-    fetch("http://localhost:3001/register", {
+    fetch("https://morning-badlands-83577.herokuapp.com/register", {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
