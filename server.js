@@ -3,11 +3,11 @@ const nodemon = require("nodemon");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const bcrypt = require("bcrypt");
-const signin = require("./controllers/signin");
-const register = require("./controllers/register");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image");
+const { handleSignin } = require("./controllers/signin");
+const { handleRegister } = require("./controllers/register");
+const errorController = require("./controllers/errorController");
 
 dotenv.config();
 const db = process.env.MONGODB_CONNECTION_STRING;
@@ -26,13 +26,9 @@ app.get("/", (req, res) => {
   res.send("success");
 });
 
-app.post("/api/signin", (req, res) => {
-  signin.handleSignin(req, res, db, bcrypt);
-});
+app.post("/api/signin", handleSignin);
 
-app.post("/api/register", (req, res) => {
-  register.handleRegister(req, res, db, bcrypt);
-});
+app.post("/api/register", handleRegister);
 
 app.get("/api/profile/:id", (req, res) => {
   profile.handleProfile(req, res, db);
@@ -45,6 +41,8 @@ app.put("/api/image", (req, res) => {
 app.post("/api/imageurl", (req, res) => {
   image.handleApiCall(req, res);
 });
+
+app.use(errorController);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

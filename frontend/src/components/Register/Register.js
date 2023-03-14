@@ -26,18 +26,21 @@ class Register extends React.Component {
   onSubmitClick = async () => {
     const { name, email, password } = this.state;
     if (!email || !password || !name) {
-      return console.log("wrong credentials");
+      return alert("Please complete all feilds.");
     }
-
-    const res = await axios.post("http://localhost:5000/api/register", {
-      name,
-      email,
-      password,
-    });
-    const user = res.data.user;
-    if (user) {
-      this.props.loadUser(user);
-      this.props.onRouteChange("home");
+    try {
+      const res = await axios.post("http://localhost:5000/api/register", {
+        name,
+        email,
+        password,
+      });
+      const user = res.data.user;
+      if (user) {
+        this.props.loadUser(user);
+        this.props.onRouteChange("home");
+      }
+    } catch (err) {
+      alert(err.response.data.message);
     }
   };
 

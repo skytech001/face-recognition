@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 
 class Signin extends React.Component {
@@ -17,26 +18,25 @@ class Signin extends React.Component {
     this.setState({ password: event.target.value });
   };
 
-  onButtSubmit = () => {
+  onButtSubmit = async () => {
     const { email, password } = this.state;
-    if (!email || !password) {
-      return console.log("wrong credentials");
-    }
-    fetch("http://localhost:5001/signin", {
-      method: "post",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    // if (!email || !password) {
+    //   return console.log("wrong credentials");
+    // }
+    try {
+      const res = await axios.post("http://localhost:5000/api/signin", {
         email: email,
         password: password,
-      }),
-    })
-      .then((res) => res.json())
-      .then((user) => {
-        if (user.id) {
-          this.props.loadUser(user);
-          this.props.onRouteChange("home");
-        }
       });
+      const user = res.data.user;
+
+      if (user) {
+        this.props.loadUser(user);
+        this.props.onRouteChange("home");
+      }
+    } catch (err) {
+      alert(err.response.data.message);
+    }
   };
 
   render() {

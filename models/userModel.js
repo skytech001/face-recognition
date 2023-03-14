@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, "A user must have an email"],
-    unique: true,
+    unique: [true, "Email already exist. Please use another email."],
   },
   password: {
     type: String,
@@ -20,7 +20,15 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
+  next();
 });
+
+userSchema.methods.checkPassword = async function (
+  candidatePassword,
+  password
+) {
+  return await bcrypt.compare(candidatePassword, password);
+};
 
 const User = new mongoose.model("User", userSchema);
 module.exports = User;
