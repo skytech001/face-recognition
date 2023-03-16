@@ -28,6 +28,7 @@ class Signin extends React.Component {
         email: email,
         password: password,
       });
+
       const user = res.data.user;
 
       if (user) {
