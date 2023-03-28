@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import "./App.css";
 import Navigation from "./components/navigation/Navigation";
 import Signin from "./components/Signin/Signin";
@@ -9,22 +10,32 @@ import ImageLinkForm from "./components/ImageLinkForm/ImageLinkForm";
 import FaceRecognition from "./components/FaceRecognition/FaceRecognition";
 
 const initialState = {
-  // we make this varriable outside here so we can useit to reset when new user signs in.
-  //it is our state.
   input: "",
   imageUrl: "",
   box: {},
   route: "signin",
   isSignedIn: false,
-  user: {
-    id: "",
-    name: "",
-    email: "",
-    entries: 0,
-    joined: "",
-  },
+  user: (async function () {
+    const res = await axios.get("http://localhost:5000", {
+      withCredentials: true,
+      credentials: "include",
+    });
+    const user = res.data.user;
+    if (user) {
+      return res.data.user;
+    } else {
+      return {
+        id: "",
+        name: "",
+        email: "",
+        entries: 0,
+        joined: "",
+      };
+    }
+  })(),
 };
 
+console.log(initialState);
 class App extends React.Component {
   constructor() {
     super();
@@ -105,36 +116,41 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App">
-        <Navigation
-          isSignedIn={this.state.isSignedIn}
-          onRouteChange={this.onRouteChange}
-        />
-        {this.state.route === "home" ? (
-          <div>
-            <Logo />
-            <Rank
-              name={this.state.user.name}
-              entries={this.state.user.entries}
-            />
-            <ImageLinkForm
-              onInputChange={this.onInputChange}
-              onButtonSubmit={this.onButtonSubmit}
-            />
-            <FaceRecognition
-              box={this.state.box}
-              imageUrl={this.state.imageUrl}
-            />
-          </div>
-        ) : this.state.route === "signin" ? (
-          <Signin loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
-        ) : (
-          <Register
-            loadUser={this.loadUser}
+      <>
+        <div className="App">
+          <Navigation
+            isSignedIn={this.state.isSignedIn}
             onRouteChange={this.onRouteChange}
           />
-        )}
-      </div>
+          {this.state.route === "home" ? (
+            <div>
+              <Logo />
+              <Rank
+                name={this.state.user.name}
+                entries={this.state.user.entries}
+              />
+              <ImageLinkForm
+                onInputChange={this.onInputChange}
+                onButtonSubmit={this.onButtonSubmit}
+              />
+              <FaceRecognition
+                box={this.state.box}
+                imageUrl={this.state.imageUrl}
+              />
+            </div>
+          ) : this.state.route === "signin" ? (
+            <Signin
+              loadUser={this.loadUser}
+              onRouteChange={this.onRouteChange}
+            />
+          ) : (
+            <Register
+              loadUser={this.loadUser}
+              onRouteChange={this.onRouteChange}
+            />
+          )}
+        </div>
+      </>
     );
   }
 }

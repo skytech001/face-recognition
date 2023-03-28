@@ -20,17 +20,22 @@ class Signin extends React.Component {
 
   onButtSubmit = async () => {
     const { email, password } = this.state;
-    // if (!email || !password) {
-    //   return console.log("wrong credentials");
-    // }
+
     try {
-      const res = await axios.post("http://localhost:5000/api/signin", {
-        email: email,
-        password: password,
-      });
+      const res = await axios.post(
+        "http://localhost:5000/api/signin",
+        {
+          email: email,
+          password: password,
+        },
+        {
+          withCredentials: true,
+          credentials: "include",
+        }
+      );
 
       const user = res.data.user;
-
+      console.log(res);
       if (user) {
         this.props.loadUser(user);
         this.props.onRouteChange("home");

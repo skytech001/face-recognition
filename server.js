@@ -2,11 +2,12 @@ const express = require("express");
 const nodemon = require("nodemon");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image");
-const { handleSignin } = require("./controllers/signin");
-const { handleRegister } = require("./controllers/register");
+const { handleSignin, isLoggedIn } = require("./controllers/authController");
+const { handleRegister } = require("./controllers/authController");
 const errorController = require("./controllers/errorController");
 
 dotenv.config();
@@ -20,9 +21,16 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({ origin: true, credentials: true }));
 
-app.get("/", (req, res) => {
+app.get("/", isLoggedIn, (req, res) => {
+  if (req.user) {
+    res.json({
+      status: "success",
+      user: req.user,
+    });
+  }
   res.send("success");
 });
 
